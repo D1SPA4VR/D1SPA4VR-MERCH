@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D1SPA4VR Merch</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+      font-size: 36px;
+      color: #ff073a;
+      text-shadow: 0 0 10px #ff073a;
+    }
+
+    nav {
+      background-color: #111;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    nav a, .dropdown-btn {
+      color: #ff073a;
+      text-decoration: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #222;
+      min-width: 200px;
+      padding: 10px;
+      z-index: 1;
+      top: 25px;
+    }
+
+    .dropdown-content input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 5px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .product {
+      background-color: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 10px;
+      width: 250px;
+      text-align: center;
+    }
+
+    .product h2 {
+      margin-bottom: 10px;
+    }
+
+    .coming-soon {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .wishlist-btn {
+      background-color: #ff073a;
+      border: none;
+      color: white;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .wishlist-page, .cart-page {
+      display: none;
+      padding: 20px;
+    }
+
+    .wishlist-page h2, .cart-page h2 {
+      color: #ff073a;
+    }
+
+    .wishlist-item {
+      margin: 5px 0;
+    }
+
+    .back-btn {
+      background-color: #444;
+      border: none;
+      color: white;
+      padding: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .notification {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #222;
+      color: #0f0;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 999;
+      box-shadow: 0 0 10px #0f0;
+    }
+
+    .ai-response {
+      color: #0ff;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>D1SPA4VR MERCH</header>
+
+  <nav>
+    <div class="dropdown">
+      <span class="dropdown-btn" onclick="toggleDropdown()">AI Tools ▼</span>
+      <div class="dropdown-content" id="ai-tools">
+        <input type="text" id="ai-question" placeholder="Ask me anything...">
+        <button onclick="askAI()">Ask</button>
+        <div class="ai-response" id="ai-response"></div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a onclick="showWishlist()">Wishlist</a>
+      <a onclick="showCart()">Cart</a>
+    </div>
+  </nav>
+
+  <div class="notification" id="notify">✔️ Added to Wishlist</div>
+
+  <div class="container" id="product-container">
+    <div class="product">
+      <h2>Sticker Pack 10</h2>
+      <button class="coming-soon">Coming Soon</button><br>
+      <button class="wishlist-btn" onclick="addToWishlist('Sticker Pack 10')">Add to Wishlist</button>
+    </div>
+
+    <div class="product">
+      <h2>Sticker Pack 8</h2>
+      <button class="coming-soon">Coming Soon</button><br>
+      <button class="wishlist-btn" onclick="addToWishlist('Sticker Pack 8')">Add to Wishlist</button>
+    </div>
+
+    <div class="product">
+      <h2>Sticker Pack 4</h2>
+      <button class="coming-soon">Coming Soon</button><br>
+      <button class="wishlist-btn" onclick="addToWishlist('Sticker Pack 4')">Add to Wishlist</button>
+    </div>
+  </div>
+
+  <div class="wishlist-page" id="wishlist-page">
+    <button class="back-btn" onclick="showProducts()">← Back to Store</button>
+    <h2>Your Wishlist</h2>
+    <div id="wishlist-items"></div>
+  </div>
+
+  <div class="cart-page" id="cart-page">
+    <button class="back-btn" onclick="showProducts()">← Back to Store</button>
+    <h2>Your Cart</h2>
+    <p>(Cart functionality coming soon!)</p>
+  </div>
+
+  <script>
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+    function addToWishlist(itemName) {
+      if (!wishlist.includes(itemName)) {
+        wishlist.push(itemName);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        showNotification("✔️ Added to Wishlist");
+      } else {
+        showNotification("❗ Already in Wishlist");
+      }
+    }
+
+    function showNotification(message) {
+      const notify = document.getElementById('notify');
+      notify.textContent = message;
+      notify.style.display = 'block';
+      setTimeout(() => {
+        notify.style.display = 'none';
+      }, 2000);
+    }
+
+    function showWishlist() {
+      document.getElementById("product-container").style.display = "none";
+      document.getElementById("wishlist-page").style.display = "block";
+      document.getElementById("cart-page").style.display = "none";
+
+      const wishlistItems = document.getElementById("wishlist-items");
+      wishlistItems.innerHTML = '';
+
+      if (wishlist.length === 0) {
+        wishlistItems.innerHTML = '<p>No items in your wishlist yet.</p>';
+      } else {
+        wishlist.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'wishlist-item';
+          div.textContent = item;
+          wishlistItems.appendChild(div);
+        });
+      }
+    }
+
+    function showCart() {
+      document.getElementById("product-container").style.display = "none";
+      document.getElementById("wishlist-page").style.display = "none";
+      document.getElementById("cart-page").style.display = "block";
+    }
+
+    function showProducts() {
+      document.getElementById("wishlist-page").style.display = "none";
+      document.getElementById("cart-page").style.display = "none";
+      document.getElementById("product-container").style.display = "flex";
+    }
+
+    function toggleDropdown() {
+      const tools = document.getElementById("ai-tools");
+      tools.style.display = tools.style.display === "block" ? "none" : "block";
+    }
+
+    function askAI() {
+      const question = document.getElementById("ai-question").value.toLowerCase();
+      const response = document.getElementById("ai-response");
+
+      if (question.includes("price")) {
+        response.textContent = "Prices will be available soon when products are released.";
+      } else if (question.includes("release")) {
+        response.textContent = "Products are coming soon! Stay tuned.";
+      } else if (question.includes("how")) {
+        response.textContent = "Ask me anything and I’ll try to help!";
+      } else {
+        response.textContent = "AI: Sorry, I can't answer that yet. Coming soon!";
+      }
+    }
+  </script>
+
+</body>
+</html>
